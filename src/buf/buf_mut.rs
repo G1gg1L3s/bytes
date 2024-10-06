@@ -5,8 +5,6 @@ use crate::{panic_advance, panic_does_not_fit};
 
 use core::{mem, ptr, usize};
 
-use alloc::{boxed::Box, vec::Vec};
-
 /// A trait for values that provide sequential write access to bytes.
 ///
 /// Write bytes to a buffer
@@ -1469,7 +1467,8 @@ unsafe impl<T: BufMut + ?Sized> BufMut for &mut T {
     deref_forward_bufmut!();
 }
 
-unsafe impl<T: BufMut + ?Sized> BufMut for Box<T> {
+#[cfg(feature = "alloc")]
+unsafe impl<T: BufMut + ?Sized> BufMut for alloc::boxed::Box<T> {
     deref_forward_bufmut!();
 }
 
@@ -1569,7 +1568,8 @@ unsafe impl BufMut for &mut [core::mem::MaybeUninit<u8>] {
     }
 }
 
-unsafe impl BufMut for Vec<u8> {
+#[cfg(feature = "alloc")]
+unsafe impl BufMut for alloc::vec::Vec<u8> {
     #[inline]
     fn remaining_mut(&self) -> usize {
         // A vector can never have more than isize::MAX bytes

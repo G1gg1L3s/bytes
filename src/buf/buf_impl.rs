@@ -8,8 +8,6 @@ use crate::{panic_advance, panic_does_not_fit};
 #[cfg(feature = "std")]
 use std::io::IoSlice;
 
-use alloc::boxed::Box;
-
 macro_rules! buf_get_impl {
     ($this:ident, $typ:tt::$conv:tt) => {{
         const SIZE: usize = core::mem::size_of::<$typ>();
@@ -1132,6 +1130,7 @@ pub trait Buf {
     /// # Panics
     ///
     /// This function panics if `len > self.remaining()`.
+    #[cfg(feature = "alloc")]
     fn copy_to_bytes(&mut self, len: usize) -> crate::Bytes {
         use super::BufMut;
 
@@ -1391,6 +1390,7 @@ macro_rules! deref_forward_buf {
         }
 
         #[inline]
+        #[cfg(feature = "alloc")]
         fn copy_to_bytes(&mut self, len: usize) -> crate::Bytes {
             (**self).copy_to_bytes(len)
         }
@@ -1401,7 +1401,8 @@ impl<T: Buf + ?Sized> Buf for &mut T {
     deref_forward_buf!();
 }
 
-impl<T: Buf + ?Sized> Buf for Box<T> {
+#[cfg(feature = "alloc")]
+impl<T: Buf + ?Sized> Buf for alloc::boxed::Box<T> {
     deref_forward_buf!();
 }
 

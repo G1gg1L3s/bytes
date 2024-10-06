@@ -19,8 +19,9 @@ keywords = ["buffers", "zero-copy", "io"]
 categories = ["network-programming", "data-structures"]
 
 [features]
-default = ["std"]
-std = []
+default = ["std", "alloc"]
+std = ["alloc"]
+alloc = []
 
 [dependencies]
 serde = { version = "1.0.60", optional = true, default-features = false, features = ["alloc"] }

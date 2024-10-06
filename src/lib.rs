@@ -72,6 +72,7 @@
 //! perform a syscall, which has the potential of failing. Operations on `Buf`
 //! and `BufMut` are infallible.
 
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 #[cfg(feature = "std")]
@@ -80,11 +81,18 @@ extern crate std;
 pub mod buf;
 pub use crate::buf::{Buf, BufMut};
 
+#[cfg(feature = "alloc")]
 mod bytes;
+#[cfg(feature = "alloc")]
 mod bytes_mut;
+#[cfg(feature = "alloc")]
 mod fmt;
+#[cfg(feature = "alloc")]
 mod loom;
+
+#[cfg(feature = "alloc")]
 pub use crate::bytes::Bytes;
+#[cfg(feature = "alloc")]
 pub use crate::bytes_mut::BytesMut;
 
 // Optional Serde support
@@ -93,6 +101,7 @@ mod serde;
 
 #[inline(never)]
 #[cold]
+#[cfg(feature = "alloc")]
 fn abort() -> ! {
     #[cfg(feature = "std")]
     {
@@ -160,6 +169,7 @@ fn panic_does_not_fit(size: usize, nbytes: usize) -> ! {
 /// But due to min rust is 1.39 and it is only stabilized
 /// in 1.47, we cannot use it.
 #[inline]
+#[cfg(feature = "alloc")]
 fn offset_from(dst: *const u8, original: *const u8) -> usize {
     dst as usize - original as usize
 }
